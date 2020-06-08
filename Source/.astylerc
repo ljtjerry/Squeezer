@@ -17,7 +17,7 @@
 --style=linux
 
 # add brackets to one line conditional statements ('if', 'for', 'while'...)
---add-brackets
+--add-braces
 
 
 

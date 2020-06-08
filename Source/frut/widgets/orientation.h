@@ -33,18 +33,38 @@ namespace widgets
 
 /// Orientation for widgets.
 ///
-enum Orientation {
-   /// horizontal widget (bottom to top)
-   horizontal = 0,
+class Orientation
+{
+public:
+   enum orientations { // public namespace!
+      /// vertical widget (bottom to top)
+      vertical = 0,
 
-   /// inverted horizontal widget (top to bottom)
-   horizontalInverted,
+      /// horizontal widget (left to right)
+      horizontal = 90,
 
-   /// vertical widget (left to right)
-   vertical,
+      /// inverted vertical widget (top to bottom)
+      verticalInverted = 180,
 
-   /// inverted vertical widget (right to left)
-   verticalInverted
+      /// inverted horizontal widget (right to left)
+      horizontalInverted = 270
+   };
+
+   Orientation();
+   explicit Orientation( Orientation::orientations newOrientation );
+
+   int getAngle();
+   void setAngle( Orientation::orientations newOrientation );
+   void setAngle( int newAngle );
+
+   void mirror();
+   void turnLeft();
+   void turnRight();
+
+   AffineTransform getTransform( Point<float> pivot );
+
+private:
+   int angle;
 };
 
 }

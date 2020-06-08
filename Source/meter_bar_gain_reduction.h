@@ -34,8 +34,7 @@ class MeterBarGainReduction :
 {
 public:
    using frut::widgets::MeterBar::create;
-   void create( frut::widgets::Orientation orientation,
-                bool discreteMeter,
+   void create( bool discreteMeter,
                 int mainSegmentHeight,
                 const Colour& segmentColour );
 

@@ -35,7 +35,6 @@ class MeterBarLevel :
 public:
    using frut::widgets::MeterBar::create;
    void create( int crestFactor,
-                frut::widgets::Orientation orientation,
                 bool discreteMeter,
                 int mainSegmentHeight,
                 const Array<Colour>& segmentColours );

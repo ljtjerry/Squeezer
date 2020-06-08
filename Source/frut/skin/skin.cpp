@@ -574,7 +574,6 @@ void Skin::placeMeterBar( const String& tagName,
 
    auto fileName = getString( xmlComponent, "image" );
    int segmentWidth = 0;
-   bool isVertical = true;
 
    if ( fileName.isNotEmpty() ) {
       auto drawable = loadImage( fileName );
@@ -583,7 +582,6 @@ void Skin::placeMeterBar( const String& tagName,
          auto bounds = drawable->getDrawableBounds();
          auto boundsInteger = bounds.getSmallestIntegerContainer();
          segmentWidth = boundsInteger.getWidth();
-         isVertical = boundsInteger.getHeight() > boundsInteger.getWidth();
 
          meterBar->setBounds( boundsInteger );
       }
@@ -591,7 +589,6 @@ void Skin::placeMeterBar( const String& tagName,
       int height = meterBar->getHeight();
       Point<int> position = getPositionInteger( xmlComponent, height, true );
       segmentWidth = getInteger( xmlComponent, "segment_width", 0 );
-      isVertical = getBoolean( xmlComponent, "vertical", true );
 
       meterBar->setTopLeftPosition( position );
    }
@@ -606,14 +603,6 @@ void Skin::placeMeterBar( const String& tagName,
    }
 
    meterBar->setSegmentWidth( segmentWidth );
-
-   // vertical bar
-   if ( isVertical ) {
-      meterBar->setOrientation( widgets::Orientation::vertical );
-      // horizontal bar
-   } else {
-      meterBar->setOrientation( widgets::Orientation::horizontal );
-   }
 }
 
 

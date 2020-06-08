@@ -58,30 +58,23 @@ void MeterBar::create()
    discreteLevelPeak_ = initialLevel;
 
    // initialise meter dimensions
-   barWidth_ = 0;
-   barHeight_ = 0;
+   barWidth_ = getWidth();
+   barHeight_ = getHeight();
 
    // initialise segment width (we always use the coordinates for a
    // vertical meter, so this corresponds to the segment height in
    // horizontal meters)
-   segmentWidth_ = 10;
+   segmentWidth_ = barWidth_;
 
    // clear array with meter segments
    meterSegments_.clear();
 
    // clear array with segment spacings
    segmentSpacing_.clear();
-
-   // set initial orientation
-   orientation_ = widgets::Orientation::vertical;
-   isVertical_ = true;
-   isInverted_ = false;
 }
 
 
-/// Add a meter segment to the meter.  This function runs fastest if
-/// you change the meter's orientation after all meter segments have
-/// been added.
+/// Add a meter segment to the meter.
 ///
 /// @param segment segment to add (will be deleted automatically)
 ///
@@ -98,12 +91,6 @@ void MeterBar::addSegment(
    // set levels to current levels; prevents blinking on (re)load
    segment->setLevels( normalLevel_, normalLevelPeak_,
                        discreteLevel_, discreteLevelPeak_ );
-
-   // store current orientation
-   widgets::Orientation orientationOld = orientation_;
-
-   // set to standard orientation to easily add a new meter segment
-   setOrientation( widgets::Orientation::vertical );
 
    // add spacing to meter bar's height (no spacing before first
    // meter segment!)
@@ -127,9 +114,6 @@ void MeterBar::addSegment(
    // add segment height to meter bar's height
    barHeight_ += segmentHeight;
 
-   // re-store old orientation
-   setOrientation( orientationOld );
-
    // show meter segment
    addAndMakeVisible( segment );
 
@@ -138,9 +122,7 @@ void MeterBar::addSegment(
 }
 
 
-/// Add a discrete meter segment to the meter.  This function runs
-/// fastest if you change the meter's orientation after all meter
-/// segments have been added.
+/// Add a discrete meter segment to the meter.
 ///
 /// @param lowerThreshold lower threshold level (in decibels)
 ///
@@ -203,9 +185,7 @@ void MeterBar::addDiscreteSegment(
 }
 
 
-/// Add a continuous meter segment to the meter.  This function runs
-/// fastest if you change the meter's orientation after all meter
-/// segments have been added.
+/// Add a continuous meter segment to the meter.
 ///
 /// @param lowerThreshold lower threshold level (in decibels)
 ///
@@ -279,198 +259,21 @@ widgets::Orientation MeterBar::getOrientation()
 }
 
 
-/// Set the meter's orientation.  In order to save some processing
-/// power, you should use this function after all meter segments have
-/// been added.
+/// Set the meter's orientation.
 ///
 /// @param orientation new meter orientation
 ///
 void MeterBar::setOrientation(
    widgets::Orientation orientation )
-
 {
-   // fast-forward ...
-   if ( orientation == orientation_ ) {
-      return;
-   }
-
-   // remember old orientation
-   bool isVerticalOld = isVertical_;
-   bool isInvertedOld = isInverted_;
-
    // update orientation
    orientation_ = orientation;
 
-   switch ( orientation_ ) {
-      case widgets::Orientation::vertical:
+   auto bounds = getBoundsInParent().toFloat();
+   auto pivot = bounds.getCentre();
+   auto newTransform = orientation_.getTransform( pivot );
 
-         // vertical meter
-         isVertical_ = true;
-
-         // meter is *not* inverted
-         isInverted_ = false;
-
-         break;
-
-      case widgets::Orientation::verticalInverted:
-
-         // vertical meter
-         isVertical_ = true;
-
-         // meter *is* inverted
-         isInverted_ = true;
-
-         break;
-
-      case widgets::Orientation::horizontal:
-
-         // horizontal meter
-         isVertical_ = false;
-
-         // meter is *not* inverted; however, we have to set this to
-         // "true", otherwise the meter segments will be drawn the
-         // wrong way round
-         isInverted_ = true;
-
-         break;
-
-      case widgets::Orientation::horizontalInverted:
-
-         // horizontal meter
-         isVertical_ = false;
-
-         // meter *is* inverted; however, we have to set this to
-         // "false", otherwise the meter segments will be drawn the
-         // wrong way round
-         isInverted_ = false;
-
-         break;
-   }
-
-   // changed from vertical to horizontal orientation or vice versa
-   if ( isVertical_ != isVerticalOld ) {
-      // re-arrange meter segments
-      for ( int index = 0; index < meterSegments_.size(); ++index ) {
-         // get current segment
-         widgets::MeterSegment* segment = meterSegments_[index];
-
-         // swap x <=> y and width <=> height
-         segment->setBounds( segment->getY(),
-                             segment->getX(),
-                             segment->getHeight(),
-                             segment->getWidth() );
-      }
-
-      // update dimensions of meter bar
-      resized();
-   }
-
-   // changed from inverted to non-inverted orientation or vice versa
-   if ( isInverted_ != isInvertedOld ) {
-      // initialise position and segment height
-      int tempX = 0;
-      int tempY = 0;
-      int segmentHeight;
-
-      // inverted orientation: start from "bottom" of meter
-      if ( isInverted_ ) {
-         tempY = barHeight_;
-      }
-
-      // position meter segments
-      for ( int index = 0; index < meterSegments_.size(); ++index ) {
-         // get current segment
-         widgets::MeterSegment* segment = meterSegments_[index];
-
-         // get current segment height
-         if ( isVertical_ ) {
-            segmentHeight = segment->getHeight();
-            // horizontal meter
-         } else {
-            segmentHeight = segment->getWidth();
-         }
-
-         // inverted orientation: subtract from current position
-         if ( isInverted_ ) {
-            // subtract spacing from position (no spacing before
-            // first meter segment!)
-            if ( index > 0 ) {
-               tempY -= segmentSpacing_[index];
-            }
-
-            // subtract segment height from position
-            tempY -= segmentHeight;
-            // non-inverted orientation: add to current position
-         } else {
-            // add spacing to position (no spacing before first
-            // meter segment)!
-            if ( index > 0 ) {
-               tempY += segmentSpacing_[index];
-            }
-         }
-
-         // move meter segments
-         if ( isVertical_ ) {
-            segment->setTopLeftPosition( tempX, tempY );
-            // horizontal meter: swap width <=> height
-         } else {
-            segment->setTopLeftPosition( tempY, tempX );
-         }
-
-         // non-inverted orientation: add height of segment to
-         // position
-         if ( ! isInverted_ ) {
-            tempY += segmentHeight;
-         }
-      }
-   }
-
-   // update segment orientation
-   for ( int index = 0; index < meterSegments_.size(); ++index ) {
-      // get current segment
-      widgets::MeterSegment* segment = meterSegments_[index];
-
-      segment->setOrientation( orientation_ );
-   }
-}
-
-
-/// Invert the current meter.  In order to save some processing power,
-/// you should use this function after all meter segments have been
-/// added.
-///
-/// @param invert **true** inverts the meter, **false** reverts to
-///        normal orientation
-///
-void MeterBar::invertMeter(
-   bool invert )
-
-{
-   // convert boolean to enum
-   if ( isVertical_ ) {
-      if ( invert ) {
-         setOrientation( widgets::Orientation::verticalInverted );
-      } else {
-         setOrientation( widgets::Orientation::vertical );
-      }
-   } else {
-      if ( invert ) {
-         setOrientation( widgets::Orientation::horizontalInverted );
-      } else {
-         setOrientation( widgets::Orientation::horizontal );
-      }
-   }
-}
-
-
-/// Find out if the current meter is inverted.
-///
-/// @return **true** if meter is inverted, **false** if meter has
-///         normal orientation
-///
-bool MeterBar::isMeterInverted()
-{
-   return isInverted_;
+   setTransform( newTransform );
 }
 
 
@@ -506,12 +309,7 @@ void MeterBar::setSegmentWidth(
       widgets::MeterSegment* segment = meterSegments_[index];
 
       // set dimensions of meter segment
-      if ( isVertical_ ) {
-         segment->setSize( segmentWidth_, segment->getHeight() );
-         // horizontal meter
-      } else {
-         segment->setSize( segment->getWidth(), segmentWidth_ );
-      }
+      segment->setSize( segmentWidth_, segment->getHeight() );
    }
 
    // update dimensions of meter bar
@@ -538,12 +336,7 @@ void MeterBar::paint(
 void MeterBar::resized()
 {
    // override dimensions of meter bar
-   if ( isVertical_ ) {
-      setSize( barWidth_, barHeight_ );
-   } else {
-      // horizontal meter: swap width <=> height
-      setSize( barHeight_, barWidth_ );
-   }
+   setSize( barWidth_, barHeight_ );
 }
 
 

@@ -25,22 +25,21 @@
 
 #include "meter_bar_level.h"
 
+
 void MeterBarLevel::create( int crestFactor,
-                            frut::widgets::Orientation orientation,
                             bool discreteMeter,
                             int mainSegmentHeight,
                             const Array<Colour>& segmentColours )
-
 {
    frut::widgets::MeterBar::create();
+
+   int numberOfBars = 15;
 
    crestFactor *= 10;
 
    int levelRange = 20;
    int trueLowerThreshold = 0;
    int lowerThreshold = trueLowerThreshold + crestFactor;
-
-   int numberOfBars = 15;
 
    for ( int n = 0; n < numberOfBars; ++n ) {
       int colourId;
@@ -92,7 +91,4 @@ void MeterBarLevel::create( int crestFactor,
       trueLowerThreshold -= levelRange;
       lowerThreshold = trueLowerThreshold + crestFactor;
    }
-
-   // set orientation here to save some processing
-   setOrientation( orientation );
 }

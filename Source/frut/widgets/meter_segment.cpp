@@ -32,40 +32,12 @@ namespace widgets
 ///
 MeterSegment::MeterSegment()
 {
-   // set initial orientation
-   setOrientation( widgets::Orientation::vertical );
 }
 
 
 /// Destructor.
 MeterSegment::~MeterSegment()
 {
-}
-
-
-/// Get the segment's orientation.
-///
-/// @return current orientation
-///
-widgets::Orientation MeterSegment::getOrientation()
-{
-   return orientation_;
-}
-
-
-/// Set the segment's orientation.
-///
-/// @param orientation new orientation
-///
-void MeterSegment::setOrientation(
-   widgets::Orientation orientation )
-
-{
-   // update segment's orientation
-   orientation_ = orientation;
-
-   // redraw meter segment
-   repaint();
 }
 
 

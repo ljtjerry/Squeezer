@@ -410,74 +410,10 @@ void SqueezerAudioProcessorEditor::applySkin_()
    OutputLevelMeters_.clear( true );
    GainReductionMeters_.clear( true );
 
-
-   Array<Colour> ColoursLevelMeter;
-
-   XmlElement* xmlSetting = skin_.getSetting( "meter_colour_high" );
-   Colour ColourHigh = skin_.getColour( xmlSetting,
-                                        Colour( 0.00f, 1.0f, 1.0f, 1.0f ) );
-
-   xmlSetting = skin_.getSetting( "meter_colour_medium" );
-   Colour ColourMedium = skin_.getColour( xmlSetting,
-                                          Colour( 0.18f, 1.0f, 1.0f, 1.0f ) );
-
-   xmlSetting = skin_.getSetting( "meter_colour_low" );
-   Colour ColourLow = skin_.getColour( xmlSetting,
-                                       Colour( 0.30f, 1.0f, 1.0f, 1.0f ) );
-
-   ColoursLevelMeter.add( ColourHigh );  // overload
-   ColoursLevelMeter.add( ColourMedium ); // warning
-   ColoursLevelMeter.add( ColourLow );   // fine
-
-   xmlSetting = skin_.getSetting( "meter_gain_reduction_normal" );
-   Colour ColourReduction = skin_.getColour( xmlSetting,
-                                             Colour( 0.58f, 1.0f, 1.0f, 1.0f ) );
-
-   xmlSetting = skin_.getSetting( "meter_segment" );
-   int SegmentHeight = skin_.getInteger( xmlSetting,
-                                         "height",
-                                         5 );
-
-   bool IsDiscreteMeter = true;
-   int CrestFactor = 0;
-
-   auto MeterOrientation = frut::widgets::Orientation::vertical;
-   auto GainReductionMeterOrientation = frut::widgets::Orientation::verticalInverted;
-
    for ( int Channel = 0; Channel < NumberOfChannels_; ++Channel ) {
-      MeterBarLevel* InputLevelMeter = InputLevelMeters_.add(
-                                          new MeterBarLevel() );
-
-      InputLevelMeter->create( CrestFactor,
-                               MeterOrientation,
-                               IsDiscreteMeter,
-                               SegmentHeight,
-                               ColoursLevelMeter );
-
-      addAndMakeVisible( InputLevelMeter );
-
-      MeterBarLevel* OutputLevelMeter = OutputLevelMeters_.add(
-                                           new MeterBarLevel() );
-
-      OutputLevelMeter->create( CrestFactor,
-                                MeterOrientation,
-                                IsDiscreteMeter,
-                                SegmentHeight,
-                                ColoursLevelMeter );
-
-      addAndMakeVisible( OutputLevelMeter );
-
-
-      MeterBarGainReduction* GainReductionMeter = GainReductionMeters_.add(
-                                                     new MeterBarGainReduction() );
-
-      GainReductionMeter->create(
-         GainReductionMeterOrientation,
-         IsDiscreteMeter,
-         SegmentHeight,
-         ColourReduction );
-
-      addAndMakeVisible( GainReductionMeter );
+      InputLevelMeters_.add( new MeterBarLevel() );
+      OutputLevelMeters_.add( new MeterBarLevel() );
+      GainReductionMeters_.add( new MeterBarGainReduction() );
    }
 
    if ( NumberOfChannels_ == 1 ) {
@@ -506,6 +442,71 @@ void SqueezerAudioProcessorEditor::applySkin_()
                            GainReductionMeters_[0] );
       skin_.placeMeterBar( "meter_gain_reduction_right",
                            GainReductionMeters_[1] );
+   }
+
+   Array<Colour> ColoursLevelMeter;
+
+   XmlElement* xmlSetting = skin_.getSetting( "meter_colour_high" );
+   Colour ColourHigh = skin_.getColour( xmlSetting,
+                                        Colour( 0.00f, 1.0f, 1.0f, 1.0f ) );
+
+   xmlSetting = skin_.getSetting( "meter_colour_medium" );
+   Colour ColourMedium = skin_.getColour( xmlSetting,
+                                          Colour( 0.18f, 1.0f, 1.0f, 1.0f ) );
+
+   xmlSetting = skin_.getSetting( "meter_colour_low" );
+   Colour ColourLow = skin_.getColour( xmlSetting,
+                                       Colour( 0.30f, 1.0f, 1.0f, 1.0f ) );
+
+   ColoursLevelMeter.add( ColourHigh );   // overload
+   ColoursLevelMeter.add( ColourMedium ); // warning
+   ColoursLevelMeter.add( ColourLow );    // fine
+
+   xmlSetting = skin_.getSetting( "meter_gain_reduction_normal" );
+   Colour ColourReduction = skin_.getColour( xmlSetting,
+                                             Colour( 0.58f, 1.0f, 1.0f, 1.0f ) );
+
+   xmlSetting = skin_.getSetting( "meter_segment" );
+   int SegmentHeight = skin_.getInteger( xmlSetting,
+                                         "height",
+                                         5 );
+
+   bool IsDiscreteMeter = true;
+   int CrestFactor = 0;
+
+   auto MeterOrientation = frut::widgets::Orientation(
+                              frut::widgets::Orientation::vertical );
+
+   auto GainReductionMeterOrientation = frut::widgets::Orientation(
+                                           frut::widgets::Orientation::verticalInverted );
+
+   for ( int Channel = 0; Channel < NumberOfChannels_; ++Channel ) {
+      auto inputLevelMeter = InputLevelMeters_[Channel];
+      auto outputLevelMeter = OutputLevelMeters_[Channel];
+      auto gainReductionMeter = GainReductionMeters_[Channel];
+
+      inputLevelMeter->create( CrestFactor,
+                               IsDiscreteMeter,
+                               SegmentHeight,
+                               ColoursLevelMeter );
+
+      addAndMakeVisible( inputLevelMeter );
+      inputLevelMeter->setOrientation( MeterOrientation );
+
+      outputLevelMeter->create( CrestFactor,
+                                IsDiscreteMeter,
+                                SegmentHeight,
+                                ColoursLevelMeter );
+
+      addAndMakeVisible( outputLevelMeter );
+      outputLevelMeter->setOrientation( MeterOrientation );
+
+      gainReductionMeter->create( IsDiscreteMeter,
+                                  SegmentHeight,
+                                  ColourReduction );
+
+      addAndMakeVisible( gainReductionMeter );
+      gainReductionMeter->setOrientation( GainReductionMeterOrientation );
    }
 
 #if SQUEEZER_EXTERNAL_SIDECHAIN == 0

@@ -23,49 +23,72 @@
 
 ---------------------------------------------------------------------------- */
 
-#ifndef FRUT_WIDGETS_METER_SEGMENT_H
-#define FRUT_WIDGETS_METER_SEGMENT_H
-
 namespace frut
 {
 namespace widgets
 {
 
-/// Base class for meter segment components.
+/// Default constructor.
 ///
-/// @see MeterBar
-///
-class MeterSegment :
-   public Component
+Orientation::Orientation()
 {
-public:
-   MeterSegment();
-   virtual ~MeterSegment();
-
-   virtual void setNormalLevels( float normalLevel,
-                                 float normalLevelPeak );
-
-   virtual void setDiscreteLevels( float discreteLevel,
-                                   float discreteLevelPeak );
-
-   /// Set discrete (peak) and normal (average) levels.
-   ///
-   /// @param normalLevel new normal level
-   ///
-   /// @param normalLevelPeak new normal peak level
-   ///
-   /// @param discreteLevel new discrete level
-   ///
-   /// @param discreteLevelPeak new discrete peak level
-   ///
-   virtual void setLevels( float normalLevel,
-                           float normalLevelPeak,
-                           float discreteLevel,
-                           float discreteLevelPeak ) = 0 ;
-
+   setAngle( Orientation::orientations::vertical );
 };
 
-}
+
+Orientation::Orientation( Orientation::orientations newOrientation )
+{
+   setAngle( newOrientation );
+};
+
+
+void Orientation::setAngle( Orientation::orientations newOrientation )
+{
+   setAngle( static_cast<int>( newOrientation ) );
+};
+
+
+void Orientation::setAngle( int newAngle )
+{
+   angle = newAngle % 360;
+};
+
+
+int Orientation::getAngle()
+{
+   return angle;
+};
+
+
+void Orientation::mirror()
+{
+   setAngle( angle + 180 );
+};
+
+
+void Orientation::turnLeft()
+{
+   setAngle( angle + 90 );
+};
+
+
+void Orientation::turnRight()
+{
+   setAngle( angle - 90 );
+};
+
+
+AffineTransform Orientation::getTransform( Point<float> pivot )
+{
+   if ( angle == 0 ) {
+      return AffineTransform();
+   }
+
+   return AffineTransform::rotation(
+             degreesToRadians( static_cast<float>( angle ) ),
+             pivot.getX(),
+             pivot.getY() );
 }
 
-#endif  // FRUT_WIDGETS_METER_SEGMENT_H
+}
+}

@@ -71,9 +71,6 @@ public:
    virtual widgets::Orientation getOrientation();
    virtual void setOrientation( widgets::Orientation orientation );
 
-   virtual void invertMeter( bool invert );
-   virtual bool isMeterInverted();
-
    virtual int getSegmentWidth();
    virtual void setSegmentWidth( int segmentWidth );
 
@@ -104,10 +101,8 @@ private:
    int barHeight_;
    int segmentWidth_;
 
-   bool isVertical_;
-   bool isInverted_;
-
    widgets::Orientation orientation_;
+
    Array<int> segmentSpacing_;
    OwnedArray<widgets::MeterSegment> meterSegments_;
 };

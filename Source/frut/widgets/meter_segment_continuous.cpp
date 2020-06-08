@@ -149,105 +149,32 @@ void MeterSegmentContinuous::drawBar(
    int pos_1 = 0;
    int pos_2 = 0;
 
-   // respect orientation
-   switch ( orientation_ ) {
-      case widgets::Orientation::verticalInverted:
+   // initialise drawing points
+   pos_1 = math::SimpleMath::round( maximumY_ * levelPosition );
+   pos_2 = maximumY_ - pos_1;
 
-         // invert level position
-         levelPosition = 1.0f - levelPosition;
+   // make sure there is something to draw
+   if ( pos_2 > 0 ) {
+      // set background colour
+      g.setColour( backgroundColour_ );
 
-      // keep going ...
+      // draw first rectangle
+      g.fillRect( 1,
+                  0,
+                  maximumX_ - 1,
+                  pos_2 + 1 );
+   }
 
-      case widgets::Orientation::vertical:
+   // make sure there is something to draw
+   if ( pos_1 > 0 ) {
+      // set segment colour
+      g.setColour( segmentColour_ );
 
-         // initialise drawing points
-         pos_1 = math::SimpleMath::round( maximumY_ * levelPosition );
-         pos_2 = maximumY_ - pos_1;
-
-         // make sure there is something to draw
-         if ( pos_2 > 0 ) {
-            if ( orientation_ == widgets::Orientation::vertical ) {
-               // set background colour
-               g.setColour( backgroundColour_ );
-            } else {
-               // set segment colour
-               g.setColour( segmentColour_ );
-            }
-
-            // draw first rectangle
-            g.fillRect( 1,
-                        0,
-                        maximumX_ - 1,
-                        pos_2 + 1 );
-         }
-
-         // make sure there is something to draw
-         if ( pos_1 > 0 ) {
-            if ( orientation_ == widgets::Orientation::vertical ) {
-               // set segment colour
-               g.setColour( segmentColour_ );
-            } else {
-               // set background colour
-               g.setColour( backgroundColour_ );
-            }
-
-            // draw second rectangle
-            g.fillRect( 1,
-                        pos_2,
-                        maximumX_ - 1,
-                        pos_1 + 1 );
-         }
-
-         break;
-
-      case widgets::Orientation::horizontal:
-
-         // invert level position
-         levelPosition = 1.0f - levelPosition;
-
-      // keep going ...
-
-      case widgets::Orientation::horizontalInverted:
-
-         // initialise drawing points
-         pos_1 = math::SimpleMath::round( maximumX_ * levelPosition );
-         pos_2 = maximumX_ - pos_1;
-
-         // make sure there is something to draw
-         if ( pos_2 > 0 ) {
-            if ( orientation_ == widgets::Orientation::horizontalInverted ) {
-               // set background colour
-               g.setColour( backgroundColour_ );
-            } else {
-               // set segment colour
-               g.setColour( segmentColour_ );
-            }
-
-            // draw first rectangle
-            g.fillRect( 0,
-                        1,
-                        pos_2 + 1,
-                        maximumY_ - 1 );
-         }
-
-         // make sure there is something to draw
-         if ( pos_1 > 0 ) {
-            if ( orientation_ == widgets::Orientation::horizontalInverted ) {
-               // set segment colour
-               g.setColour( segmentColour_ );
-            } else {
-               // set background colour
-               g.setColour( backgroundColour_ );
-            }
-
-            // draw second rectangle
-            g.fillRect( pos_2,
-                        1,
-                        pos_1 + 1,
-                        maximumY_ - 1 );
-         }
-
-         break;
+      // draw second rectangle
+      g.fillRect( 1,
+                  pos_2,
+                  maximumX_ - 1,
+                  pos_1 + 1 );
    }
 }
 
@@ -275,76 +202,28 @@ void MeterSegmentContinuous::drawMarker(
    int pos_1 = 0;
    int pos_2 = 0;
 
-   // respect orientation
-   switch ( orientation_ ) {
-      case widgets::Orientation::verticalInverted:
+   // initialise drawing points
+   pos_1 = math::SimpleMath::round( maximumY_ * levelPosition );
 
-         // invert level position
-         levelPosition = 1.0f - levelPosition;
-
-      // keep going ...
-
-      case widgets::Orientation::vertical:
-
-         // initialise drawing points
-         pos_1 = math::SimpleMath::round( maximumY_ * levelPosition );
-
-         // level overlaps into the next segment, so we have to draw
-         // the remaining marker in this segment
-         if ( levelPosition > 1.0f ) {
-            pos_1 = maximumY_ + 1;
-            // otherwise, limit marker position to this segment
-         } else if ( pos_1 > maximumY_ ) {
-            pos_1 = maximumY_;
-         }
-
-         pos_2 = maximumY_ - pos_1;
-
-         // set line colour
-         g.setColour( markerColour );
-
-         // draw marker (two pixels high)
-         g.drawRect( 1,
-                     pos_2,
-                     maximumX_ - 1,
-                     2 );
-
-         break;
-
-      case widgets::Orientation::horizontal:
-
-         // invert level position
-         levelPosition = 1.0f - levelPosition;
-
-      // keep going ...
-
-      case widgets::Orientation::horizontalInverted:
-
-         // initialise drawing points
-         pos_1 = math::SimpleMath::round( maximumX_ * levelPosition );
-
-         // level overlaps into the next segment, so we have to draw
-         // the remaining marker in this segment
-         if ( levelPosition > 1.0f ) {
-            pos_1 = maximumX_ + 1;
-            // otherwise, limit marker position to this segment
-         } else if ( pos_1 > maximumX_ ) {
-            pos_1 = maximumX_;
-         }
-
-         pos_2 = maximumX_ - pos_1;
-
-         // set line colour
-         g.setColour( markerColour );
-
-         // draw marker (two pixels wide)
-         g.drawRect( pos_2,
-                     1,
-                     2,
-                     maximumY_ - 1 );
-
-         break;
+   // level overlaps into the next segment, so we have to draw
+   // the remaining marker in this segment
+   if ( levelPosition > 1.0f ) {
+      pos_1 = maximumY_ + 1;
+      // otherwise, limit marker position to this segment
+   } else if ( pos_1 > maximumY_ ) {
+      pos_1 = maximumY_;
    }
+
+   pos_2 = maximumY_ - pos_1;
+
+   // set line colour
+   g.setColour( markerColour );
+
+   // draw marker (two pixels high)
+   g.drawRect( 1,
+               pos_2,
+               maximumX_ - 1,
+               2 );
 }
 
 
