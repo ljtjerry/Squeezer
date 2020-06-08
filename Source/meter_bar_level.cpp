@@ -34,6 +34,7 @@ void MeterBarLevel::create( int crestFactor,
    frut::widgets::MeterBar::create();
 
    int numberOfBars = 15;
+   // int mainSegmentHeight = ( height - 1 ) / numberOfBars;
 
    crestFactor *= 10;
 

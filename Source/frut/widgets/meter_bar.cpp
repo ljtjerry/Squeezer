@@ -269,10 +269,10 @@ void MeterBar::setOrientation(
    // update orientation
    orientation_ = orientation;
 
-   auto bounds = getBoundsInParent().toFloat();
-   auto pivot = bounds.getCentre();
-   auto newTransform = orientation_.getTransform( pivot );
+   auto bounds = getBoundsInParent();
+   auto newTransform = orientation_.getTransform( bounds );
 
+   // FIXME: use *local* positions
    setTransform( newTransform );
 }
 

@@ -61,7 +61,7 @@ public:
    void turnLeft();
    void turnRight();
 
-   AffineTransform getTransform( Point<float> pivot );
+   AffineTransform getTransform( Rectangle<int> bounds );
 
 private:
    int angle;

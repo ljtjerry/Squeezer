@@ -78,11 +78,13 @@ void Orientation::turnRight()
 };
 
 
-AffineTransform Orientation::getTransform( Point<float> pivot )
+AffineTransform Orientation::getTransform( Rectangle<int> bounds )
 {
    if ( angle == 0 ) {
       return AffineTransform();
    }
+
+   auto pivot = bounds.getCentre().toFloat();
 
    return AffineTransform::rotation(
              degreesToRadians( static_cast<float>( angle ) ),
