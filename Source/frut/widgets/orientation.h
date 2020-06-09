@@ -47,25 +47,46 @@ public:
       verticalInverted = 180,
 
       /// inverted horizontal widget (right to left)
-      horizontalInverted = 270
+      horizontalInverted = 270,
+
+      /// widget's orientation does not match any direction
+      other = -1
    };
 
    Orientation();
    explicit Orientation( Orientation::orientations newOrientation );
+   explicit Orientation( int newAngle );
 
-   int getAngle();
-   void setAngle( Orientation::orientations newOrientation );
+   Orientation::orientations getOrientation() const;
+   void setOrientation( Orientation::orientations newOrientation );
+
+   int getAngle() const;
    void setAngle( int newAngle );
 
-   void mirror();
-   void turnLeft();
-   void turnRight();
+   bool isVertical() const;
+   bool isInverted() const;
 
-   AffineTransform getTransform( Rectangle<int> bounds );
+   Orientation mirror();
+   Orientation turnLeft();
+   Orientation turnRight();
+
+   AffineTransform getTransform( Rectangle<int> bounds ) const;
 
 private:
    int angle;
 };
+
+bool operator==( const Orientation& a,
+                 const Orientation& b );
+
+bool operator!=( const Orientation& a,
+                 const Orientation& b );
+
+bool operator==( const Orientation& a,
+                 Orientation::orientations ori );
+
+bool operator!=( const Orientation& a,
+                 Orientation::orientations ori );
 
 }
 }

@@ -38,13 +38,56 @@ Orientation::Orientation()
 
 Orientation::Orientation( Orientation::orientations newOrientation )
 {
-   setAngle( newOrientation );
+   setOrientation( newOrientation );
 };
 
 
-void Orientation::setAngle( Orientation::orientations newOrientation )
+Orientation::Orientation( int newAngle )
+{
+   setAngle( newAngle );
+};
+
+
+Orientation::orientations Orientation::getOrientation() const
+{
+   switch ( angle ) {
+      case Orientation::orientations::vertical:
+
+         return Orientation::orientations::vertical;
+         break;
+
+      case Orientation::orientations::horizontal:
+
+         return Orientation::orientations::horizontal;
+         break;
+
+      case Orientation::orientations::verticalInverted:
+
+         return Orientation::orientations::verticalInverted;
+         break;
+
+      case Orientation::orientations::horizontalInverted:
+
+         return Orientation::orientations::horizontalInverted;
+         break;
+
+      default:
+
+         return Orientation::orientations::other;
+         break;
+   }
+}
+
+
+void Orientation::setOrientation( Orientation::orientations newOrientation )
 {
    setAngle( static_cast<int>( newOrientation ) );
+};
+
+
+int Orientation::getAngle() const
+{
+   return angle;
 };
 
 
@@ -54,33 +97,69 @@ void Orientation::setAngle( int newAngle )
 };
 
 
-int Orientation::getAngle()
+bool Orientation::isVertical() const
 {
-   return angle;
+   switch ( angle ) {
+      case Orientation::orientations::vertical:
+
+         return true;
+         break;
+
+      case Orientation::orientations::verticalInverted:
+
+         return true;
+         break;
+
+      default:
+
+         return false;
+         break;
+   }
+}
+
+
+bool Orientation::isInverted() const
+{
+   switch ( angle ) {
+      case Orientation::orientations::verticalInverted:
+
+         return true;
+         break;
+
+      case Orientation::orientations::horizontalInverted:
+
+         return true;
+         break;
+
+      default:
+
+         return false;
+         break;
+   }
+}
+
+
+Orientation Orientation::mirror()
+{
+   return Orientation( angle + 180 );
 };
 
 
-void Orientation::mirror()
+Orientation Orientation::turnLeft()
 {
-   setAngle( angle + 180 );
+   return Orientation( angle + 90 );
 };
 
 
-void Orientation::turnLeft()
+Orientation Orientation::turnRight()
 {
-   setAngle( angle + 90 );
+   return Orientation( angle - 90 );
 };
 
 
-void Orientation::turnRight()
+AffineTransform Orientation::getTransform( Rectangle<int> bounds ) const
 {
-   setAngle( angle - 90 );
-};
-
-
-AffineTransform Orientation::getTransform( Rectangle<int> bounds )
-{
-   if ( angle == 0 ) {
+   if ( angle == Orientation::orientations::vertical ) {
       return AffineTransform();
    }
 
@@ -91,6 +170,35 @@ AffineTransform Orientation::getTransform( Rectangle<int> bounds )
              pivot.getX(),
              pivot.getY() );
 }
+
+
+bool operator==( const Orientation& a,
+                 const Orientation& b )
+{
+   return ( a.getAngle() == b.getAngle() );
+}
+
+
+bool operator!=( const Orientation& a,
+                 const Orientation& b )
+{
+   return ! ( a == b );
+}
+
+
+bool operator==( const Orientation& a,
+                 Orientation::orientations ori )
+{
+   return ( a.getOrientation() == ori );
+}
+
+
+bool operator!=( const Orientation& a,
+                 Orientation::orientations ori )
+{
+   return ! ( a == ori );
+}
+
 
 }
 }
