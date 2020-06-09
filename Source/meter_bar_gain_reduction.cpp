@@ -30,16 +30,16 @@ void MeterBarGainReduction::create( frut::widgets::Orientation orientation,
                                     bool discreteMeter,
                                     int mainSegmentHeight,
                                     const Colour& segmentColour )
-
 {
    frut::widgets::MeterBar::create();
 
-   int trueLowerThreshold = 0;
-   int levelRange = 10;
    int numberOfBars = 15;
 
+   int levelRange = 10;
+   int trueLowerThreshold = ( numberOfBars - 1 ) * levelRange;
+
    for ( int n = 0; n < numberOfBars; ++n ) {
-      bool hasHighestLevel = ( n == ( numberOfBars - 1 ) ) ? true : false;
+      bool hasHighestLevel = ( n == 0 );
 
       if ( discreteMeter ) {
          // meter segment outlines overlap
@@ -72,7 +72,7 @@ void MeterBarGainReduction::create( frut::widgets::Orientation orientation,
             segmentColour.withMultipliedBrightness( 0.7f ) );
       }
 
-      trueLowerThreshold += levelRange;
+      trueLowerThreshold -= levelRange;
    }
 
    // set orientation here to save some processing

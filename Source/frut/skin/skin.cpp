@@ -609,10 +609,10 @@ void Skin::placeMeterBar( const String& tagName,
 
    // vertical bar
    if ( isVertical ) {
-      meterBar->setOrientation( widgets::Orientation::vertical );
+      meterBar->setOrientation( widgets::Orientation( widgets::Orientation::vertical ) );
       // horizontal bar
    } else {
-      meterBar->setOrientation( widgets::Orientation::horizontal );
+      meterBar->setOrientation( widgets::Orientation( widgets::Orientation::horizontal ) );
    }
 }
 

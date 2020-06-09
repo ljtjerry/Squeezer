@@ -441,8 +441,11 @@ void SqueezerAudioProcessorEditor::applySkin_()
    bool IsDiscreteMeter = true;
    int CrestFactor = 0;
 
-   auto MeterOrientation = frut::widgets::Orientation::vertical;
-   auto GainReductionMeterOrientation = frut::widgets::Orientation::verticalInverted;
+   auto MeterOrientation = frut::widgets::Orientation (
+                              frut::widgets::Orientation::vertical );
+
+   auto GainReductionMeterOrientation = frut::widgets::Orientation (
+                                           frut::widgets::Orientation::vertical );
 
    for ( int Channel = 0; Channel < NumberOfChannels_; ++Channel ) {
       MeterBarLevel* InputLevelMeter = InputLevelMeters_.add(
